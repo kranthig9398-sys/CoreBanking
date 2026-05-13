@@ -30,5 +30,4 @@ public class SpringMangerApplication extends SpringBootServletInitializer {
 		    public void initTwilio() {
 		        Twilio.init(accountSid, authToken);
 		    }
-		
 }
