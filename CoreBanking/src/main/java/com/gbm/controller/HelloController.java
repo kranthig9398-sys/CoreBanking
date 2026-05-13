@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/gbm")
 public class HelloController {
 
-    @GetMapping("/hello")
+    @GetMapping("/hello0")
     public String hello() {
         return "JWT is working!";
     }
@@ -18,5 +18,10 @@ public class HelloController {
     @GetMapping("/report")
     public String getReportDtails() {
         return "Reposrt are working successfully!!!";
+    }
+    
+    @GetMapping("/hello")
+    public String doumloadPdf() {
+        return "downloaded successfully!!!";
     }
 }
