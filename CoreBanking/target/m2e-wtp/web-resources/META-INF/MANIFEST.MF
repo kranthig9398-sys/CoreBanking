@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Built-By: 100952
+Build-Jdk: 17.0.7
+Implementation-Title: DigitalSIgnServiceApp
+Implementation-Version: 0.0.1-SNAPSHOT
+Implementation-Vendor-Id: com.gbm
+Implementation-URL: https://projects.spring.io/spring-boot/#/spring-boot
+ -starter-parent/CoreBanking
+Created-By: Maven Integration for Eclipse
+

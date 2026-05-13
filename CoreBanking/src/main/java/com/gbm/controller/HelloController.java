@@ -12,4 +12,11 @@ public class HelloController {
     public String hello() {
         return "JWT is working!";
     }
+
+    //cretaed by amala
+    
+    @GetMapping("/report")
+    public String getReportDtails() {
+        return "Reposrt are working successfully!!!";
+    }
 }
