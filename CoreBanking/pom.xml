@@ -46,10 +46,29 @@
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jdbc</artifactId>
+		</dependency>
+		<!--Spring JDBC CONFIGUARATION-->
+		<dependency>
+			<groupId>com.oracle.database.jdbc</groupId>
+			<artifactId>ojdbc8</artifactId>
+			<version>19.25.0.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
+		<!--Spring JDBC CONFIGUARATION ENDS HERE-->
+		<!--Spring JPA CONFIGUARATION-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<!--Spring JPA CONFIGUARATION ENDS HERE-->
+		
 		
 		<!--dependency>
 			<groupId>com.twilio.sdk</groupId>
