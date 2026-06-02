@@ -1,0 +1,29 @@
+package com.cb.customs.exeptions;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import com.cb.dto.CBServiceResponseDTO;
+
+@RestControllerAdvice
+public class CBGlobalHandleException {
+
+	@ExceptionHandler(CBRequestBodyNotFoundExeption.class)
+	public ResponseEntity<CBServiceResponseDTO> handleRequestbodyExeptionController(CBServiceResponseDTO cbServiceResponseDTO){
+		CBServiceResponseDTO cbServiceResponse=new CBServiceResponseDTO(cbServiceResponseDTO.getStatus(),cbServiceResponseDTO.getMessage(),cbServiceResponseDTO.getErrorMessage(),null);
+		return ResponseEntity.badRequest().body(cbServiceResponse);
+	}
+
+	@ExceptionHandler(NullPointerException.class)
+	public ResponseEntity<CBServiceResponseDTO> handleException(NullPointerException ex) {
+		CBServiceResponseDTO cbServiceResponseDTO=new CBServiceResponseDTO (0,"CBE4004", "Internal Error with "+ex.getMessage(), null);
+		return ResponseEntity.badRequest().body(cbServiceResponseDTO);
+	}
+	
+	@ExceptionHandler(CBNoDetailsFoundException.class)
+	public ResponseEntity<CBServiceResponseDTO> handleException(CBNoDetailsFoundException ndf) {
+		CBServiceResponseDTO cbServiceResponseDTO=new CBServiceResponseDTO (0,"CBE4001", ndf.getMessage(), null);
+		return ResponseEntity.badRequest().body(cbServiceResponseDTO);
+	}
+}
