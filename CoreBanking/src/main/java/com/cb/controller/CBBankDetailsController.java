@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cb.customs.exeptions.CBInSufficentFundExeption;
 import com.cb.customs.exeptions.CBNoDetailsFoundException;
 import com.cb.email.entities.CBBankDetails;
 import com.cb.email.entities.CBBankDetailsEntity;
@@ -40,4 +41,15 @@ public class CBBankDetailsController {
 			throw new CBNoDetailsFoundException("No Details Found for given Id is "+Id);
 		}
 	}
+	@GetMapping("/validatefund/{account}")
+	public CBBankDetailsEntity getBankAccountFundValidate(@PathVariable int account){
+		Optional<CBBankDetailsEntity> optional=bankDetailsService.getBankDetailsServiceById(account);
+		
+		if(optional.isPresent()) {
+			return optional.get();
+		}else {
+			throw new CBInSufficentFundExeption("in suficent fund for given account "+account);
+		}
+	}
 }
+

@@ -4,6 +4,8 @@ public class AuthRequestDTO {
 
     private String username;
     private String password;
+    private String roll;
+    
 	public String getUsername() {
 		return username;
 	}
@@ -16,8 +18,15 @@ public class AuthRequestDTO {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	public String getRoll() {
+		return roll;
+	}
+	public void setRoll(String roll) {
+		this.roll = roll;
+	}
 	@Override
 	public String toString() {
-		return "AuthRequest [username=" + username + ", password=" + password + "]";
+		return "AuthRequestDTO [username=" + username + ", password=" + password + ", roll=" + roll + "]";
 	}
+	 
 }

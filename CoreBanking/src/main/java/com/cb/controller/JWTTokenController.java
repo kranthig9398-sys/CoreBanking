@@ -16,7 +16,7 @@ public class JWTTokenController {
 	@Autowired
 	private JWTSecurityManager jwtUtil;
 
-	@PostMapping("/logintest")
+	@PostMapping("/generatetoken")
 	public String loginTest(@RequestBody AuthRequestDTO requestDTO) {
 
 		System.out.println("Requested "+requestDTO.getUsername()+","+requestDTO.getPassword());
@@ -29,7 +29,7 @@ public class JWTTokenController {
 	}
 
 	@PostMapping("/validateToken")
-	public String validateToken(@RequestHeader("Authorization") String header) {
+	public String validateToken(@RequestHeader("Authorization") String header,@RequestBody AuthRequestDTO authRequestDTO) {
 
 		if (header == null || !header.startsWith("Bearer ")) {
 			return "Invalid Header";
@@ -39,11 +39,11 @@ public class JWTTokenController {
 
 		System.out.println("Token in controller: " + token);
 
-		return jwtUtil.validateToken(token, "admin") ? "Valid Token": "Invalid Token";
+		return jwtUtil.validateToken(token, authRequestDTO.getUsername()) ? "Valid Token": "Invalid Token";
 	}
 	
 	@PostMapping("/validateTokenURL")
-	public String validateTokenURLRedirection(@RequestHeader("Authorization") String header) {
+	public String validateTokenURLRedirection(@RequestHeader("Authorization") String header,@RequestBody AuthRequestDTO authRequestDTO) {
 
 		if (header == null || !header.startsWith("Bearer ")) {
 			return "redirect:/gbm/error";
@@ -51,7 +51,7 @@ public class JWTTokenController {
 
 		String token = header.substring(7);
 
-		return jwtUtil.validateToken(token, "admin")
+		return jwtUtil.validateToken(token, authRequestDTO.getUsername())
 				? "redirect:/gbm/success"
 						: "redirect:/gbm/error";
 	}

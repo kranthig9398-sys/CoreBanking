@@ -7,6 +7,10 @@ public class CBServiceResponseDTO<T> {
 	private String ErrorMessage;
 	private T ResponseBody;
 
+	
+	public CBServiceResponseDTO() {
+		super();
+	}
 	public CBServiceResponseDTO(int status, String message, String errorMessage, T responseBody) {
 		super();
 		Status = status;

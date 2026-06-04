@@ -26,4 +26,9 @@ public class CBGlobalHandleException {
 		CBServiceResponseDTO cbServiceResponseDTO=new CBServiceResponseDTO (0,"CBE4001", ndf.getMessage(), null);
 		return ResponseEntity.badRequest().body(cbServiceResponseDTO);
 	}
+	@ExceptionHandler(CBInSufficentFundExeption.class)
+	public ResponseEntity<CBServiceResponseDTO> inSufficentFundException(CBInSufficentFundExeption cbInSufficentFundExeption){
+		CBServiceResponseDTO cbServiceResponseDTO=new CBServiceResponseDTO(0,"CBE4003", cbInSufficentFundExeption.getMessage(), null);
+		return ResponseEntity.badRequest().body(cbServiceResponseDTO);
+	}
 }
