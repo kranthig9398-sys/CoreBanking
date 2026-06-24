@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Built-By: Gudise Kranthi
 Build-Jdk: 17.0.8.1
-Implementation-Title: DigitalSIgnServiceApp
+Implementation-Title: CoreBankingApp
 Implementation-Version: 0.0.1-SNAPSHOT
 Implementation-Vendor-Id: com.gbm
 Implementation-URL: https://projects.spring.io/spring-boot/#/spring-boot

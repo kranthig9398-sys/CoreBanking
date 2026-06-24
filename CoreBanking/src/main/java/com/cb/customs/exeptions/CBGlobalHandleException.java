@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.cb.dto.CBServiceResponseDTO;
+import com.cb.common.dto.CBServiceResponseDTO;
 
 @RestControllerAdvice
 public class CBGlobalHandleException {

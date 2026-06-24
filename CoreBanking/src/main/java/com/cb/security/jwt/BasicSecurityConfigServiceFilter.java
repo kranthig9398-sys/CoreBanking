@@ -22,7 +22,7 @@ public class BasicSecurityConfigServiceFilter extends WebSecurityConfigurerAdapt
 		http
 		.csrf().disable()
 		.authorizeRequests()
-		.antMatchers("/gbm/hello","/jwttoken/logintest","/jwttoken/validateToken","/cbuser/hello").permitAll()
+		.antMatchers(CBSecurityConstants.PUBLIC_URLS).permitAll()
 		.anyRequest().authenticated().and().formLogin().disable().httpBasic();
 		http.addFilterBefore(jwtFilter,UsernamePasswordAuthenticationFilter.class);    
 	}
