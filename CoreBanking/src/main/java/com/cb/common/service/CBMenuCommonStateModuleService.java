@@ -45,7 +45,7 @@ public class CBMenuCommonStateModuleService implements CBMenuCommonStateModuleSe
 				dto.setRoute(m.getRoute());
 				sectionDTO.setSectionName(m.getSectionDeatails().getSectionName());
 				dto.setAccessLevel(m.getCbLevelMenuDetails().getLevelName());
-
+				dto.setAccessLevelCode(m.getCbLevelMenuDetails().getLevelId());
 				return dto;
 
 			}).collect(Collectors.toList());

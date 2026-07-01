@@ -1,45 +1,63 @@
 package com.cb.common.dto;
 
 public class CBServiceResponseDTO<T> {
+	private int status;
+	private String message;
+	private String errorCode;
+	private String errorMessage;
+	private String successMessage;
+	private T responseBody;
 
-	private int Status;
-	private String Message;
-	private String ErrorMessage;
-	private T ResponseBody;
-
-	
 	public CBServiceResponseDTO() {
 		super();
 	}
-	public CBServiceResponseDTO(int status, String message, String errorMessage, T responseBody) {
+
+	public CBServiceResponseDTO(String message, int status, String errorCode, String errorMessage, T responseBody) {
 		super();
-		Status = status;
-		Message = message;
-		ErrorMessage = errorMessage;
-		ResponseBody = responseBody;
+		this.message = message;
+		this.status = status;
+		this.errorCode = errorCode;
+		this.errorMessage = errorMessage;
+		this.responseBody = responseBody;
 	}
-	public int getStatus() {
-		return Status;
-	}
-	public void setStatus(int status) {
-		Status = status;
-	}
+
 	public String getMessage() {
-		return Message;
+		return message;
 	}
 	public void setMessage(String message) {
-		Message = message;
+		this.message = message;
+	}
+	public int getStatus() {
+		return status;
+	}
+	public void setStatus(int status) {
+		this.status = status;
+	}
+	public String getErrorCode() {
+		return errorCode;
+	}
+	public void setErrorCode(String errorCode) {
+		this.errorCode = errorCode;
 	}
 	public String getErrorMessage() {
-		return ErrorMessage;
+		return errorMessage;
 	}
 	public void setErrorMessage(String errorMessage) {
-		ErrorMessage = errorMessage;
+		this.errorMessage = errorMessage;
 	}
 	public T getResponseBody() {
-		return ResponseBody;
+		return responseBody;
 	}
 	public void setResponseBody(T responseBody) {
-		ResponseBody = responseBody;
+		this.responseBody = responseBody;
 	}
+
+	public String getSuccessMessage() {
+		return successMessage;
+	}
+
+	public void setSuccessMessage(String successMessage) {
+		this.successMessage = successMessage;
+	}
+	
 }

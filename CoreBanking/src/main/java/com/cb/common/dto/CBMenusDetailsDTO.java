@@ -4,6 +4,7 @@ public class CBMenusDetailsDTO {
 	private String menuName;
 	private String route;
 	private String accessLevel;
+	private int accessLevelCode;
 	
 	public CBMenusDetailsDTO() {
 		super();
@@ -25,5 +26,11 @@ public class CBMenusDetailsDTO {
 	}
 	public void setAccessLevel(String accessLevel) {
 		this.accessLevel = accessLevel;
+	}
+	public int getAccessLevelCode() {
+		return accessLevelCode;
+	}
+	public void setAccessLevelCode(int accessLevelCode) {
+		this.accessLevelCode = accessLevelCode;
 	}
 }

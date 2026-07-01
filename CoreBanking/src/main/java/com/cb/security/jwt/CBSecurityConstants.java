@@ -22,6 +22,14 @@ package com.cb.security.jwt;
 	            "/cb/common/modules/groups/**",
 	            "/cb/common/get/anoncement/list",
 	            "/cb/cbuser/user/profile/monitoring",
-	            "/cb/cbuser/user/profile/validate/**"
+	            "/cb/cbuser/user/profile/validate/**",
+	            "/cb/common/bodeod/api/test/eod",
+	            "/cb/common/bodeod/api/test/access",
+	            "/cb/common/bodeod/api/test/success",
+	            "/cb/common/bodeod/api/test/bod",
+	            "/cb/common/bodeod/module/api/validate/bodeod",
+	            "/cb/common/bodeod/module/api/validate/bodeod",
+	            "/cb/common/bodeod/module/api/perform/bodeod/entry",
+	            "/cb/common/bodeod/module/api/perform/update/eod/entry"
 	    };
 	}
