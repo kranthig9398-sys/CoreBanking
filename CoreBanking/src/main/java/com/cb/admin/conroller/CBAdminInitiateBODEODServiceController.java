@@ -4,9 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cb.admin.service.CBAdminInitiateBODEODService;
@@ -33,5 +35,10 @@ public class CBAdminInitiateBODEODServiceController {
 	@PostMapping("/module/api/perform/update/eod/entry")
 	public ResponseEntity<CBServiceResponseDTO> performUpdateEODSchemeCodeBranchLevelModuleUpdateController(@RequestBody CBUserDetailsServiceDTO cbUserDetailsServiceDTO) {
 		return ResponseEntity.status(HttpStatus.OK).body(branchlevelvalidateService.performUpdateEODSchemeCodeBranchLevelModuleUpdate(cbUserDetailsServiceDTO));
+	}
+	//Check BOD/EOD Status for Module Branch Level for The Day with Action Type
+	@PostMapping("/module/api/check/bodeod/status/{actionType}")
+	public ResponseEntity<CBServiceResponseDTO> validateCommonBODEODStatusBasedOnActionType(@RequestBody CBUserDetailsServiceDTO cbUserDetailsServiceDTO,@PathVariable("actionType") String actionType) {
+		return ResponseEntity.status(HttpStatus.OK).body(branchlevelvalidateService.validateModuleBranchLevelForTheDaywithActionType(cbUserDetailsServiceDTO,actionType));
 	}
 }

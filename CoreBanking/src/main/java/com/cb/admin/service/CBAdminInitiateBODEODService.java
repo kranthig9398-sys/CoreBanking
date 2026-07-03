@@ -110,6 +110,110 @@ public class CBAdminInitiateBODEODService {
 			return apiServiceResponseDTO;
 		}
 	}
+	public CBServiceResponseDTO validateModuleBranchLevelForTheDaywithActionType(CBUserDetailsServiceDTO cbUserDetailsServiceDto,String sActionType) {
+		CBAdminBODEODStatusResponseDTO bodEODStatusApiResponse = null;
+		CBServiceResponseDTO apiServiceResponseDTO=null;
+		try {
+			bodEODStatusApiResponse =  new CBAdminBODEODStatusResponseDTO();
+			apiServiceResponseDTO=new CBServiceResponseDTO();
+
+			int sSchemeCode=cbUserDetailsServiceDto.getSchemeCode();
+			int sSolId=cbUserDetailsServiceDto.getSolId();
+			int sBranchLevel=cbUserDetailsServiceDto.getLoginLevel();
+
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+			Date todayDate = (Date) sdf.parse(cbUserDetailsServiceDto.getSolDate());
+
+			System.out.println("validateModuleBranchLevelForTheDaywithActionType-schemeCode  :" + sSchemeCode);
+			System.out.println("validateModuleBranchLevelForTheDaywithActionType-solId       :" + sSolId);
+			System.out.println("validateModuleBranchLevelForTheDaywithActionType-solLevel    :" + sBranchLevel);
+			System.out.println("validateModuleBranchLevelForTheDaywithActionType-solDate     :" + todayDate);
+			System.out.println("validateModuleBranchLevelForTheDaywithActionType-Action Type :" + sActionType);
+
+			if(sBranchLevel==4) {
+				List<CBAdminBodEodSchemeCodeModuleEntity> dashboardData =adminBODEODServiceRepository.findBySolIdAndSolDateAndSchemeCodeOrderBySolLevel(sSolId,todayDate,sSchemeCode);
+				apiServiceResponseDTO.setStatus(0);
+				apiServiceResponseDTO.setMessage("SUCCESS");
+				apiServiceResponseDTO.setResponseBody(dashboardData);
+				return apiServiceResponseDTO;
+			}
+			
+			List<CBAdminBodEodSchemeCodeModuleEntity> entityList = adminBODEODServiceRepository.findLatestBODEODCheckStatus(sSchemeCode, sSolId,todayDate, sBranchLevel);
+			System.out.println("EOD BOD entityList Repo is :"+entityList.toString());
+			if(entityList == null || entityList.isEmpty()) {
+
+				apiServiceResponseDTO.setStatus(0);
+				apiServiceResponseDTO.setMessage("SUCCESS");
+				apiServiceResponseDTO.setErrorCode("BODEOD001");
+				apiServiceResponseDTO.setErrorMessage("BOD/EOD status not initiated for Scheme Code "+sSchemeCode+" the day for Selected Branch SolId "+sBranchLevel);
+				apiServiceResponseDTO.setResponseBody(null);
+				return apiServiceResponseDTO;
+			}
+
+			CBAdminBodEodSchemeCodeModuleEntity entity = entityList.get(0);
+
+			String bodStatus =	entity.getBodStatus() == null ? null : entity.getBodStatus();
+			String eodStatus =entity.getEodStatus() == null ? null : entity.getEodStatus();
+
+			System.out.println("The Branch SOL ID for :"+sBranchLevel+" BOD Status is --->:"+bodStatus);
+			System.out.println("The Branch SOL ID for :"+sBranchLevel+" EOD Status is --->:"+eodStatus);
+
+			bodEODStatusApiResponse.setBodStatus(bodStatus);
+			bodEODStatusApiResponse.setEodStatus(eodStatus);
+
+			if(sActionType.equalsIgnoreCase("BOD")) {
+				if (!"C".equalsIgnoreCase(bodStatus) || "N".equalsIgnoreCase(bodStatus)) {
+
+					bodEODStatusApiResponse.setBodDone(true);
+					bodEODStatusApiResponse.setMessage("BOD Not completed today for Scheme Code "+sSchemeCode+" the Branch Code "+sBranchLevel);
+					apiServiceResponseDTO.setErrorMessage("BOD Not completed today for Scheme Code "+sSchemeCode+" the Branch Code "+sBranchLevel);
+					apiServiceResponseDTO.setStatus(0);
+					apiServiceResponseDTO.setMessage("SUCCESS");
+					apiServiceResponseDTO.setErrorCode("BOD001");
+					apiServiceResponseDTO.setResponseBody(null);
+				}else {
+
+					bodEODStatusApiResponse.setBodDone(true);
+					bodEODStatusApiResponse.setMessage("BOD is Completed today for Scheme Code "+sSchemeCode+" the Branch "+sBranchLevel);
+					apiServiceResponseDTO.setErrorMessage("BOD is Completed today for Scheme Code "+sSchemeCode+" the Branch "+sBranchLevel);
+					apiServiceResponseDTO.setStatus(0);
+					apiServiceResponseDTO.setMessage("SUCCESS");
+					apiServiceResponseDTO.setErrorCode("BOD002");
+					apiServiceResponseDTO.setResponseBody(null);
+				}
+			}else {
+
+				if (!"C".equalsIgnoreCase(eodStatus) || "N".equalsIgnoreCase(eodStatus)) {
+
+					bodEODStatusApiResponse.setBodDone(true);
+					bodEODStatusApiResponse.setMessage("EOD Not completed today for Scheme Code "+sSchemeCode+" the Branch Code "+sBranchLevel);
+					apiServiceResponseDTO.setErrorMessage("EOD Not completed today for Scheme Code "+sSchemeCode+" the Branch Code "+sBranchLevel);
+					apiServiceResponseDTO.setStatus(1);
+					apiServiceResponseDTO.setMessage("FAILED");
+					apiServiceResponseDTO.setErrorCode("EOD001");
+					apiServiceResponseDTO.setResponseBody(null);
+				}else  {
+					bodEODStatusApiResponse.setEodDone(true);
+					bodEODStatusApiResponse.setMessage("EOD is Completed today for Scheme Code "+sSchemeCode+" the Branch "+sBranchLevel);
+					apiServiceResponseDTO.setErrorMessage("EOD is Completed today for Scheme Code "+sSchemeCode+" the Branch "+sBranchLevel);
+					apiServiceResponseDTO.setStatus(1);
+					apiServiceResponseDTO.setMessage("FAILED");
+					apiServiceResponseDTO.setErrorCode("EOD002");
+					apiServiceResponseDTO.setResponseBody(null);
+				}
+			}
+			return apiServiceResponseDTO;
+
+		} catch (Exception e) {
+			apiServiceResponseDTO.setErrorMessage("Error while validating BOD/EOD status");
+			apiServiceResponseDTO.setStatus(1);
+			apiServiceResponseDTO.setMessage("FAILED");
+			apiServiceResponseDTO.setErrorCode("BODEOD003");
+			apiServiceResponseDTO.setResponseBody(null);
+			e.printStackTrace();
+			return apiServiceResponseDTO;
+		}
+	}
 	//Perform BODEOD Entry
 	public CBServiceResponseDTO doAdminLevelSchemeCodeModuleInitiateBODEODService(@RequestBody CBUserDetailsServiceDTO cbUserDetailsServiceDTO) {
 		CBServiceResponseDTO cbServiceResponseDTO=null;
@@ -130,10 +234,10 @@ public class CBAdminInitiateBODEODService {
 
 			List<CBAdminBodEodSchemeCodeModuleEntity> entityList = adminBODEODServiceRepository.findLatestBODEODCheckStatus(sSchemeCode, sSolId,todayDate, sBranchLevel);
 			System.out.println("EOD BOD entityList Repo is :"+entityList.toString());
-			
+
 			if(entityList == null || entityList.isEmpty()) {
 				System.out.println("Initiated call to Performing BODEOD Entity");
-				
+
 				if(!performBodEODSchemeCodeBranchLevelModule(cbUserDetailsServiceDTO)) {
 					cbServiceResponseDTO.setStatus(1);
 					cbServiceResponseDTO.setMessage("FAILED");
@@ -171,7 +275,7 @@ public class CBAdminInitiateBODEODService {
 			System.out.println("performBodEODSchemeCodeBranchLevelModule-solId      : " + sSolId);
 			System.out.println("performBodEODSchemeCodeBranchLevelModule-solLevel   : " + sBranchLevel);
 			System.out.println("performBodEODSchemeCodeBranchLevelModule-solDate    : " + todayDate);
-			
+
 			CBAdminBodEodSchemeCodeModuleEntity insertBodEodSchemeCodeModuleEntity=new CBAdminBodEodSchemeCodeModuleEntity();
 
 			insertBodEodSchemeCodeModuleEntity.setSchemeCode(sSchemeCode);
@@ -191,7 +295,7 @@ public class CBAdminInitiateBODEODService {
 		}
 		return true;		
 	}
-	
+
 	// Update EOD Entry
 	public CBServiceResponseDTO performUpdateEODSchemeCodeBranchLevelModuleUpdate(CBUserDetailsServiceDTO cbUserDetailsServiceDTO) {
 

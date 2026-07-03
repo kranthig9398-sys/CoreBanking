@@ -30,6 +30,7 @@ package com.cb.security.jwt;
 	            "/cb/common/bodeod/module/api/validate/bodeod",
 	            "/cb/common/bodeod/module/api/validate/bodeod",
 	            "/cb/common/bodeod/module/api/perform/bodeod/entry",
-	            "/cb/common/bodeod/module/api/perform/update/eod/entry"
+	            "/cb/common/bodeod/module/api/perform/update/eod/entry",
+	            "/cb/common/bodeod/module/api/check/bodeod/status/**"
 	    };
 	}

@@ -14,4 +14,6 @@ public interface CBAdminInitiateBODEODServiceRepository extends JpaRepository<CB
 	//	List<CBCommonBranchLevelBodEodStatusCheckEntity> findBySchemeCodeAndSolIdAndSolDateAndSolLevel(Integer schemeCode,Integer solId,Date solDate,Integer solLevel);
 	@Query("FROM CBAdminBodEodSchemeCodeModuleEntity WHERE schemeCode = :schemeCode AND solId = :solId AND solLevel = :solLevel AND FUNCTION('TRUNC', solDate) = FUNCTION('TRUNC', :solDate) ORDER BY id DESC")
 	public List<CBAdminBodEodSchemeCodeModuleEntity> findLatestBODEODCheckStatus(@Param("schemeCode") Integer schemeCode,@Param("solId")Integer solId,@Param("solDate") Date solDate,@Param("solLevel") Integer solLevel);
+	
+	List<CBAdminBodEodSchemeCodeModuleEntity> findBySolIdAndSolDateAndSchemeCodeOrderBySolLevel(Integer solId,Date solDate,Integer schemeCode);
 }
