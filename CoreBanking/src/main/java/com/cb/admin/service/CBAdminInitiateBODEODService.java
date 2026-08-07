@@ -4,12 +4,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.cb.admin.dto.CBAdminBODEODStatusResponseDTO;
+import com.cb.admin.dto.CBAdminBodEodStatusDTO;
 import com.cb.admin.entity.CBAdminBodEodSchemeCodeModuleEntity;
 import com.cb.admin.repository.CBAdminInitiateBODEODServiceRepository;
 import com.cb.common.dto.CBServiceResponseDTO;
@@ -132,78 +134,152 @@ public class CBAdminInitiateBODEODService {
 
 			if(sBranchLevel==4) {
 				List<CBAdminBodEodSchemeCodeModuleEntity> dashboardData =adminBODEODServiceRepository.findBySolIdAndSolDateAndSchemeCodeOrderBySolLevel(sSolId,todayDate,sSchemeCode);
-				apiServiceResponseDTO.setStatus(0);
-				apiServiceResponseDTO.setMessage("SUCCESS");
-				apiServiceResponseDTO.setResponseBody(dashboardData);
-				return apiServiceResponseDTO;
-			}
-			
-			List<CBAdminBodEodSchemeCodeModuleEntity> entityList = adminBODEODServiceRepository.findLatestBODEODCheckStatus(sSchemeCode, sSolId,todayDate, sBranchLevel);
-			System.out.println("EOD BOD entityList Repo is :"+entityList.toString());
-			if(entityList == null || entityList.isEmpty()) {
 
-				apiServiceResponseDTO.setStatus(0);
-				apiServiceResponseDTO.setMessage("SUCCESS");
-				apiServiceResponseDTO.setErrorCode("BODEOD001");
-				apiServiceResponseDTO.setErrorMessage("BOD/EOD status not initiated for Scheme Code "+sSchemeCode+" the day for Selected Branch SolId "+sBranchLevel);
-				apiServiceResponseDTO.setResponseBody(null);
-				return apiServiceResponseDTO;
-			}
+				if(dashboardData == null || dashboardData.isEmpty()) {
+					apiServiceResponseDTO.setStatus(1);
+					apiServiceResponseDTO.setMessage("FAILED");
+					apiServiceResponseDTO.setErrorCode("BODEOD010");
+					apiServiceResponseDTO.setErrorMessage("No Record Found for Scheme Code "+sSchemeCode+" the day for Selected Branch SolId "+sBranchLevel);
+					apiServiceResponseDTO.setResponseBody(null);
+					return apiServiceResponseDTO;
+				}else{
+					List<CBAdminBodEodStatusDTO> dashboardDTOList =
+							dashboardData.stream()
+							.map(entity -> {
 
-			CBAdminBodEodSchemeCodeModuleEntity entity = entityList.get(0);
+								CBAdminBodEodStatusDTO dto =
+										new CBAdminBodEodStatusDTO();
 
-			String bodStatus =	entity.getBodStatus() == null ? null : entity.getBodStatus();
-			String eodStatus =entity.getEodStatus() == null ? null : entity.getEodStatus();
+								dto.setModuleName("State Tax");
 
-			System.out.println("The Branch SOL ID for :"+sBranchLevel+" BOD Status is --->:"+bodStatus);
-			System.out.println("The Branch SOL ID for :"+sBranchLevel+" EOD Status is --->:"+eodStatus);
+								dto.setBranchName(String.valueOf(entity.getSolId()));
 
-			bodEODStatusApiResponse.setBodStatus(bodStatus);
-			bodEODStatusApiResponse.setEodStatus(eodStatus);
+								switch (entity.getSolLevel()) {
 
-			if(sActionType.equalsIgnoreCase("BOD")) {
-				if (!"C".equalsIgnoreCase(bodStatus) || "N".equalsIgnoreCase(bodStatus)) {
+								case 1:
+									dto.setBranchLevel("Terminal");
+									break;
 
-					bodEODStatusApiResponse.setBodDone(true);
-					bodEODStatusApiResponse.setMessage("BOD Not completed today for Scheme Code "+sSchemeCode+" the Branch Code "+sBranchLevel);
-					apiServiceResponseDTO.setErrorMessage("BOD Not completed today for Scheme Code "+sSchemeCode+" the Branch Code "+sBranchLevel);
+								case 2:
+									dto.setBranchLevel("Focal");
+									break;
+
+								case 3:
+									dto.setBranchLevel("Nodal");
+									break;
+
+								default:
+									dto.setBranchLevel("Unknown");
+								}
+
+								dto.setBodStatus(entity.getBodStatus());
+								dto.setBodDoneBy(entity.getBodDoneBy());
+								dto.setBodDoneDate(entity.getBodDoneDate());
+
+								dto.setEodStatus(entity.getEodStatus());
+								dto.setEodDoneBy(entity.getEodDoneBy());
+								dto.setEodDoneDate(entity.getEodDoneDate());
+
+								return dto;
+
+							})
+							.collect(Collectors.toList());		
 					apiServiceResponseDTO.setStatus(0);
 					apiServiceResponseDTO.setMessage("SUCCESS");
-					apiServiceResponseDTO.setErrorCode("BOD001");
-					apiServiceResponseDTO.setResponseBody(null);
-				}else {
-
-					bodEODStatusApiResponse.setBodDone(true);
-					bodEODStatusApiResponse.setMessage("BOD is Completed today for Scheme Code "+sSchemeCode+" the Branch "+sBranchLevel);
-					apiServiceResponseDTO.setErrorMessage("BOD is Completed today for Scheme Code "+sSchemeCode+" the Branch "+sBranchLevel);
-					apiServiceResponseDTO.setStatus(0);
-					apiServiceResponseDTO.setMessage("SUCCESS");
-					apiServiceResponseDTO.setErrorCode("BOD002");
-					apiServiceResponseDTO.setResponseBody(null);
+					apiServiceResponseDTO.setResponseBody(dashboardDTOList);
+					return apiServiceResponseDTO;
 				}
 			}else {
 
-				if (!"C".equalsIgnoreCase(eodStatus) || "N".equalsIgnoreCase(eodStatus)) {
+				List<CBAdminBodEodSchemeCodeModuleEntity> entityList = adminBODEODServiceRepository.findLatestBODEODCheckStatus(sSchemeCode, sSolId,todayDate, sBranchLevel);
+				System.out.println("EOD BOD entityList Repo is :"+entityList.toString());
 
-					bodEODStatusApiResponse.setBodDone(true);
-					bodEODStatusApiResponse.setMessage("EOD Not completed today for Scheme Code "+sSchemeCode+" the Branch Code "+sBranchLevel);
-					apiServiceResponseDTO.setErrorMessage("EOD Not completed today for Scheme Code "+sSchemeCode+" the Branch Code "+sBranchLevel);
-					apiServiceResponseDTO.setStatus(1);
-					apiServiceResponseDTO.setMessage("FAILED");
-					apiServiceResponseDTO.setErrorCode("EOD001");
+				if(entityList == null || entityList.isEmpty()) {
+
+					apiServiceResponseDTO.setStatus(0);
+					apiServiceResponseDTO.setMessage("SUCCESS");
+					apiServiceResponseDTO.setErrorCode("BODEOD001");
+					apiServiceResponseDTO.setErrorMessage("BOD/EOD status not initiated for Scheme Code "+sSchemeCode+" the day for Selected Branch SolId "+sBranchLevel);
 					apiServiceResponseDTO.setResponseBody(null);
-				}else  {
-					bodEODStatusApiResponse.setEodDone(true);
-					bodEODStatusApiResponse.setMessage("EOD is Completed today for Scheme Code "+sSchemeCode+" the Branch "+sBranchLevel);
-					apiServiceResponseDTO.setErrorMessage("EOD is Completed today for Scheme Code "+sSchemeCode+" the Branch "+sBranchLevel);
-					apiServiceResponseDTO.setStatus(1);
-					apiServiceResponseDTO.setMessage("FAILED");
-					apiServiceResponseDTO.setErrorCode("EOD002");
-					apiServiceResponseDTO.setResponseBody(null);
+					return apiServiceResponseDTO;
 				}
-			}
-			return apiServiceResponseDTO;
 
+				CBAdminBodEodSchemeCodeModuleEntity entity = entityList.get(0);
+
+				String bodStatus =	entity.getBodStatus() == null ? null : entity.getBodStatus();
+				String eodStatus =entity.getEodStatus() == null ? null : entity.getEodStatus();
+
+				System.out.println("The Branch SOL ID for :"+sBranchLevel+" BOD Status is --->:"+bodStatus);
+				System.out.println("The Branch SOL ID for :"+sBranchLevel+" EOD Status is --->:"+eodStatus);
+
+				bodEODStatusApiResponse.setBodStatus(bodStatus);
+				bodEODStatusApiResponse.setEodStatus(eodStatus);
+
+				if(sActionType.equalsIgnoreCase("BOD")) {
+					if ("N".equalsIgnoreCase(bodStatus)) {
+
+						bodEODStatusApiResponse.setBodDone(true);
+						bodEODStatusApiResponse.setMessage("BOD Not completed today for Scheme Code "+sSchemeCode+" the Branch Code "+sBranchLevel);
+						apiServiceResponseDTO.setErrorMessage("BOD Not completed today for Scheme Code "+sSchemeCode+" the Branch Code "+sBranchLevel);
+						apiServiceResponseDTO.setStatus(0);
+						apiServiceResponseDTO.setMessage("SUCCESS");
+						apiServiceResponseDTO.setErrorCode("BOD001");
+						apiServiceResponseDTO.setResponseBody(null);
+
+					}else if ("I".equalsIgnoreCase(bodStatus)) {
+
+						bodEODStatusApiResponse.setBodDone(true);
+						bodEODStatusApiResponse.setMessage("BOD Not completed today for Scheme Code "+sSchemeCode+" the Branch Code "+sBranchLevel);
+						apiServiceResponseDTO.setErrorMessage("BOD Not completed today for Scheme Code "+sSchemeCode+" the Branch Code "+sBranchLevel);
+						apiServiceResponseDTO.setStatus(0);
+						apiServiceResponseDTO.setMessage("SUCCESS");
+						apiServiceResponseDTO.setErrorCode("BOD001");
+						apiServiceResponseDTO.setResponseBody(null);
+
+					} else if ("C".equalsIgnoreCase(bodStatus)) {
+
+						bodEODStatusApiResponse.setBodDone(true);
+						bodEODStatusApiResponse.setMessage("BOD is Completed today for Scheme Code "+sSchemeCode+" the Branch "+sBranchLevel);
+						apiServiceResponseDTO.setErrorMessage("BOD is Completed today for Scheme Code "+sSchemeCode+" the Branch "+sBranchLevel);
+						apiServiceResponseDTO.setStatus(0);
+						apiServiceResponseDTO.setMessage("SUCCESS");
+						apiServiceResponseDTO.setErrorCode("BOD002");
+						apiServiceResponseDTO.setResponseBody(null);
+					}
+				}else if(sActionType.equalsIgnoreCase("EOD")) {
+
+					if ("N".equalsIgnoreCase(eodStatus)) {
+
+						bodEODStatusApiResponse.setBodDone(true);
+						bodEODStatusApiResponse.setMessage("EOD Not completed today for Scheme Code "+sSchemeCode+" the Branch Code "+sBranchLevel);
+						apiServiceResponseDTO.setErrorMessage("EOD Not completed today for Scheme Code "+sSchemeCode+" the Branch Code "+sBranchLevel);
+						apiServiceResponseDTO.setStatus(1);
+						apiServiceResponseDTO.setMessage("FAILED");
+						apiServiceResponseDTO.setErrorCode("EOD001");
+						apiServiceResponseDTO.setResponseBody(null);
+
+					}else if ("I".equalsIgnoreCase(eodStatus)) {
+
+						bodEODStatusApiResponse.setBodDone(true);
+						bodEODStatusApiResponse.setMessage("EOD Not completed today for Scheme Code "+sSchemeCode+" the Branch Code "+sBranchLevel);
+						apiServiceResponseDTO.setErrorMessage("EOD Not completed today for Scheme Code "+sSchemeCode+" the Branch Code "+sBranchLevel);
+						apiServiceResponseDTO.setStatus(1);
+						apiServiceResponseDTO.setMessage("FAILED");
+						apiServiceResponseDTO.setErrorCode("EOD001");
+						apiServiceResponseDTO.setResponseBody(null);
+
+					}else if("C".equalsIgnoreCase(eodStatus)){
+						bodEODStatusApiResponse.setEodDone(true);
+						bodEODStatusApiResponse.setMessage("EOD is Completed today for Scheme Code "+sSchemeCode+" the Branch "+sBranchLevel);
+						apiServiceResponseDTO.setErrorMessage("EOD is Completed today for Scheme Code "+sSchemeCode+" the Branch "+sBranchLevel);
+						apiServiceResponseDTO.setStatus(1);
+						apiServiceResponseDTO.setMessage("FAILED");
+						apiServiceResponseDTO.setErrorCode("EOD002");
+						apiServiceResponseDTO.setResponseBody(null);
+					}
+				}
+				return apiServiceResponseDTO;
+			}
 		} catch (Exception e) {
 			apiServiceResponseDTO.setErrorMessage("Error while validating BOD/EOD status");
 			apiServiceResponseDTO.setStatus(1);
